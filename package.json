@@ -1,0 +1,11 @@
+{
+  "name": "customizeDesk",
+  "version": "1.0.0",
+  "description": "customizing appliation made with threejs",
+  "main": "main.js",
+  "author": "jjaka",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.86.0"
+  }
+}
