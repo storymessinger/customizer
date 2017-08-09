@@ -67,11 +67,13 @@ let camera, scene, renderer;
 let geometry = new THREE.BoxGeometry(20,20,20);
 let transformControl;
 
+let helperObjects = [];
+
 init();
 animate();
 
-function init() {
 
+function init() {
     console.log('initiated');
 
     // Scene
@@ -132,13 +134,61 @@ function init() {
     container.appendChild( renderer.domElement )
 
 
-    // Controls
-    let controls = new THREE.OrbitControls( camera, renderer.domElement );
+   // Controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.damping = 0.2;
-    controls.addEventListener( 'change', render );
-    controls.addEventListener( 'start', function() {
-        cancelHideTransform();
-    })
+    controls.addEventListener('change', render);
+    controls.addEventListener('start', function () {
+        cancelHideTransorm();
+    });
+    controls.addEventListener('end', function () {
+        delayHideTransform();
+    });
+    transformControl = new THREE.TransformControls(camera, renderer.domElement);
+    transformControl.addEventListener('change', render);
+    scene.add(transformControl);
+    // Hiding transform situation is a little in a mess :()
+    transformControl.addEventListener('change', function (e) {
+        cancelHideTransorm();
+    });
+    transformControl.addEventListener('mouseDown', function (e) {
+        cancelHideTransorm();
+    });
+    transformControl.addEventListener('mouseUp', function (e) {
+        delayHideTransform();
+    });
+    transformControl.addEventListener('objectChange', function (e) {
+        updateSplineOutline();
+    });
+    var dragcontrols = new THREE.DragControls(helperObjects, camera, renderer.domElement); //
+    dragcontrols.enabled = false;
+    dragcontrols.addEventListener('hoveron', function (event) {
+        transformControl.attach(event.object);
+        cancelHideTransorm();
+    });
+    dragcontrols.addEventListener('hoveroff', function (event) {
+        delayHideTransform();
+    });
+    var hiding;
+
+    function delayHideTransform() {
+        cancelHideTransorm();
+        hideTransform();
+    }
+
+    function hideTransform() {
+        hiding = setTimeout(function () {
+            transformControl.detach(transformControl.object);
+        }, 2500)
+    }
+
+    function cancelHideTransorm() {
+        if (hiding) clearTimeout(hiding);
+    }
+    
+
+
+    initTet();
 }
 
 
@@ -157,6 +207,42 @@ function render() {
     renderer.render( scene, camera );
 }
 
+function initTet() {
+    var tetSide = 100;
+    var wireframeMat = new THREE.MeshBasicMaterial({
+        wireframe: true,
+        color: 'blue'
+    });
+    //
+    let object = new THREE.Mesh(geometry, wireframeMat);
+
+    object.position.x = Math.random() * 1000 - 500;
+    object.position.y = Math.random() * 600;
+    object.position.z = Math.random() * 800 - 400;
+    //
+    scene.add(object);
+    helperObjects.push(object);
+}
+
+
+function addSplineObject(position) {
+    var material = new THREE.MeshLambertMaterial({
+        color: Math.random() * 0xffffff
+    });
+    var object = new THREE.Mesh(geometry, material);
+    if (position) {
+        object.position.copy(position);
+    } else {
+        object.position.x = Math.random() * 1000 - 500;
+        object.position.y = Math.random() * 600;
+        object.position.z = Math.random() * 800 - 400;
+    }
+    object.castShadow = true;
+    object.receiveShadow = true;
+    scene.add(object);
+    splineHelperObjects.push(object);
+    return object;
+}
 
 
 

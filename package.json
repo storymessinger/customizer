@@ -5,7 +5,11 @@
   "main": "main.js",
   "author": "jjaka",
   "license": "MIT",
+  "scripts": {    
+    "dev": "lite-server"
+  },
   "dependencies": {
+    "lite-server": "^2.3.0",
     "three": "^0.86.0"
   }
 }
