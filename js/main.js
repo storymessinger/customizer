@@ -73,10 +73,11 @@ animate();
 function init() {
 
     console.log('initiated');
-    
+
+    // Scene
+    scene = new THREE.Scene();
     // Camera
     container = document.getElementById('container');
-    scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.set(0, 250, 1000);
     scene.add(camera);
@@ -121,15 +122,9 @@ function init() {
     var cube = new THREE.Mesh( Cube_geometry, Cube_material );
     scene.add( cube );
 
-
-    // Axis Helper
-    var axis = new THREE.AxisHelper();
-    axis.position.set( -500, -500, -500 );
-    scene.add( axis );
-
-
     // Renderer
-    renderer = new THREE.WebGLRenderer( {antialias: true});
+    renderer = new THREE.WebGLRenderer( {antialias: false});
+        // performance issue => antialias to false
     renderer.setClearColor( 0xf0f0f0 );
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -144,12 +139,9 @@ function init() {
     controls.addEventListener( 'start', function() {
         cancelHideTransform();
     })
-    
-
-
-
-
 }
+
+
 function animate() {
     requestAnimationFrame( animate );
     render();
